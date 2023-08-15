@@ -20,38 +20,39 @@ function splitIntoLines(textSelection) {
 
 // turning text into shapes
 function turnIntoShapes(textSelection){
+    // creating outlines from each letter and getting ref to the resulting path items (in a group)
     var textOutlines = textSelection.createOutline();
-    var textObjects = textOutlines.compoundPathItems; // note this might not be the way to get items in the group?
+    var textObjects = textOutlines.compoundPathItems;
+    // init some variables for iteration 
     var previousY;
-    alert(textObjects.length);
     var groupNum = 1;
+    // creating new group in the current layer and adding to the document
     var currentGroup = currentLayer.groupItems.add();
     currentGroup.name = "TextGroup1";
-    currentGroup.move( document, ElementPlacement.PLACEATEND );
-    for (var i=0; i < textObjects.length; i++){
-        var currentY = textObjects[i].bottom;
+    currentGroup.move(document, ElementPlacement.PLACEATEND);
+    // storing initial number of chars in the group as a var, as this will reduce as we move objects out of the group!
+    var textObjectsLength = textObjects.length; 
+    // iterating over each character path, will move to a different group based on Y, intended to make each line a diff group
+    for (var i=0; i < textObjectsLength; i++){
+        // iterating but will always want the first elem... as we are removing the current first element/last element evaluated each time
+        var currentY = textObjects[0].geometricBounds[3];
         if (!previousY){
             previousY = currentY;
         }
-        var currentX = textObjects[i].left;
-        // alert("current x: " + currentX + " current y: " + currentY);
-        
-        if (!(-3 < (currentY - previousY) < 3)){ // checking if y is not close/almost the same, may not be best numbers/to hardcode
-            // make new group for the new line of text
+        // checking if y is not close/almost the same, may not be best numbers/to hardcode
+        // TODO: this is not capturing puntuation as being part of the same line
+        if (!(Math.abs(currentY - previousY) < 3)){
+            // make new group for the new line of text and setting it as current group
             groupNum += 1;
             var newGroup = currentLayer.groupItems.add();
             currentGroup = newGroup;
             currentGroup.name = "TextGroup" + groupNum.toString();
             currentGroup.move( document, ElementPlacement.PLACEATEND );
-            // TODO: set the position of the group or just the contents?
         }
-        // TODO: why is only every other path being moved into the new group?
-        // alert(currentGroup.name);
-        textObjects[i].move(currentGroup, ElementPlacement.PLACEATEND);
+        // moving the current item/char out of the original group to the current/new group
+        textObjects[0].move(currentGroup, ElementPlacement.PLACEATEND);
         previousY = currentY;
     }
-    // need to actively move out of the group one by one
-    // BUT this can potentially help make by each line, can get the Y of each object and make a new group
 }
 turnIntoShapes(currentSelection);
 
