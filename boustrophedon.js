@@ -78,7 +78,6 @@ function reflectAlternate(currentLayer){
     // iterating over the groups and applying scale matrix (reflection) to every other group
     for (var i = 0; i < targetGroups.length; i++){
         // iterating backwards as the groups will be backwards from bottom to top
-        alert(targetGroups[i].name);
         if (i % 2 == 1){
             targetGroups[i].transform(totalMatrix);
         }

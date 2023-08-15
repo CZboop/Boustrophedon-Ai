@@ -13,6 +13,8 @@ Link to the [Wikipedia article on the subject](https://en.wikipedia.org/wiki/Bou
 This script provides a simple and repeatable way of applying the left to right reflection style of boustrophedon to a selected text frame in Adobe Illustrator.
 It will also optionally uppercase and/or centre the text.
 
+Note: the text may become larger if it doesn't start uppercase, and original forced line breaks may be lost due to this expansion. If this is the case it may be necessary to ensure the starting text frame is larger than the original text
+
 ## How to Use
 Clone this repository or download the boustrephedon.js file so you have the script locally
 
@@ -32,3 +34,4 @@ To prevent the script from doing one or both of these:
 - Run again!
 
 ## Examples
+Check out an example of a before and after from running the script:
