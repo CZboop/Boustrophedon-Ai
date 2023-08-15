@@ -11,7 +11,7 @@ function turnIntoShapes(textSelection, currentLayer, document){
 
     // creating new group in the current layer and adding to the document
     var currentGroup = currentLayer.groupItems.add();
-    currentGroup.name = "BoustrophedonTextGroup1";
+    currentGroup.name = "BoustrophedonTextLine1";
     currentGroup.move(document, ElementPlacement.PLACEATEND);
 
     // storing initial number of chars in the group as a var, as this will reduce as we move objects out of the group!
@@ -38,7 +38,7 @@ function turnIntoShapes(textSelection, currentLayer, document){
             groupNum += 1;
             var newGroup = currentLayer.groupItems.add();
             currentGroup = newGroup;
-            currentGroup.name = "BoustrophedonTextGroup" + groupNum.toString();
+            currentGroup.name = "BoustrophedonTextLine" + groupNum.toString();
             currentGroup.move( document, ElementPlacement.PLACEATEND );
         }
 
@@ -49,14 +49,8 @@ function turnIntoShapes(textSelection, currentLayer, document){
     }
 }
 
-function regroupText(){
-    //  TODO:
-}
-
-// reflecting each alternate line
-function reflectAlternate(currentLayer){
-    // reflecting with scale matrix reversing on x axis
-    var totalMatrix = app.getScaleMatrix(-100,100);
+// getting the groups that have been subject of transform
+function selectAndReturnTargetGroups(currentLayer){
     // array to store the layers that have group names created in turnIntoShapes func
     var targetGroups = [];
 
@@ -65,18 +59,39 @@ function reflectAlternate(currentLayer){
         var currentGroupName = currentLayer.groupItems[i].name;
         if (currentGroupName.length > 0){
             // using indexOf as startsWith not supported
-            if (currentGroupName.indexOf("BoustrophedonTextGroup") === 0){
+            if (currentGroupName.indexOf("BoustrophedonTextLine") === 0){
                 targetGroups.push(currentLayer.groupItems[i]);
             }
         }
     }
+    return targetGroups;
+}
 
+// reflecting each alternate line
+function reflectAlternate(currentLayer){
+    // reflecting with scale matrix reversing on x axis
+    var totalMatrix = app.getScaleMatrix(-100,100);
+    
+    var targetGroups = selectAndReturnTargetGroups(currentLayer);
     // iterating over the groups and applying scale matrix (reflection) to every other group
     for (var i = targetGroups.length - 1; i >= 0; i--){
         // iterating backwards as the groups will be backwards from bottom to top
         if (i % 2 == 1){
             targetGroups[i].transform(totalMatrix);
         }
+    }
+}
+
+// take the current groups per line and regroup them into another higher level group
+function regroupText(currentLayer, document){
+    //  get the groups that have been transformed
+    var targetGroups = selectAndReturnTargetGroups(currentLayer);
+    // create a new group to add the smaller groups to
+    var newGroup = currentLayer.groupItems.add();
+    newGroup.name = "BoustrophedonTextGroup";
+    newGroup.move(document, ElementPlacement.PLACEATEND);
+    for (var i = targetGroups.length - 1; i >= 0; i--){
+        targetGroups[i].move(newGroup, ElementPlacement.PLACEATEND);
     }
 }
 
@@ -109,6 +124,7 @@ function run(uppercase, centre){
     // run the main script
     turnIntoShapes(currentSelection, currentLayer, document);
     reflectAlternate(currentLayer);
+    regroupText(currentLayer, document); 
 }
 
 run(true, true);
