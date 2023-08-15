@@ -5,20 +5,7 @@ const document = app.activeDocument;
 const currentSelection = document.selection[0];
 const currentLayer = document.activeLayer;
 
-function splitIntoLines(textSelection) {
-    var textContent = textSelection.contents.toString();
-    // TODO: is there a char that can split on if ai added a forced line break because text too long for frame?
-    var splitText = textContent.split(/[\r]|[\r\n]+/)
-    var newTextFrame;
-    // TODO: preserve styling, size, and position of original!
-    for (var i = 0 ; i < splitText.length ; i++) {
-        var newTextFrame = currentLayer.textFrames.add();
-        newTextFrame.contents = splitText[i];
-    }
-}
-// splitIntoLines(currentSelection);
-
-// turning text into shapes
+// turning text into shapes and splitting into groups per line
 function turnIntoShapes(textSelection){
     // creating outlines from each letter and getting ref to the resulting path items (in a group)
     var textOutlines = textSelection.createOutline();
@@ -28,7 +15,7 @@ function turnIntoShapes(textSelection){
     var groupNum = 1;
     // creating new group in the current layer and adding to the document
     var currentGroup = currentLayer.groupItems.add();
-    currentGroup.name = "TextGroup1";
+    currentGroup.name = "BoustrophedonTextGroup1";
     currentGroup.move(document, ElementPlacement.PLACEATEND);
     // storing initial number of chars in the group as a var, as this will reduce as we move objects out of the group!
     var textObjectsLength = textObjects.length; 
@@ -46,7 +33,7 @@ function turnIntoShapes(textSelection){
             groupNum += 1;
             var newGroup = currentLayer.groupItems.add();
             currentGroup = newGroup;
-            currentGroup.name = "TextGroup" + groupNum.toString();
+            currentGroup.name = "BoustrophedonTextGroup" + groupNum.toString();
             currentGroup.move( document, ElementPlacement.PLACEATEND );
         }
         // moving the current item/char out of the original group to the current/new group
@@ -56,5 +43,28 @@ function turnIntoShapes(textSelection){
 }
 turnIntoShapes(currentSelection);
 
-// TODO: reflecting each alternate line
-function reflectAlternate(){}
+// reflecting each alternate line
+function reflectAlternate(){
+    // reflecting with scale matrix reversing on x axis
+    var totalMatrix = app.getScaleMatrix(-100,100);
+    // array to store the layers that have group names created in turnIntoShapes func
+    var targetGroups = [];
+    // iterate over groups in layer to get the groups whos name starts with expected
+    for (var i = 0; i < currentLayer.groupItems.length; i++) {
+        var currentGroupName = currentLayer.groupItems[i].name;
+        if (currentGroupName.length > 0){
+            // using indexOf as startsWith not supported
+            if (currentGroupName.indexOf("BoustrophedonTextGroup") === 0){
+                targetGroups.push(currentLayer.groupItems[i]);
+            }
+        }
+    }
+    // iterating over the groups and applying scale matrix to every other group
+    for (var i = targetGroups.length - 1; i >= 0; i--){
+        // iterating backwards as the groups will be backwards from bottom to top
+        if (i % 2 == 1){
+            targetGroups[i].transform(totalMatrix);
+        }
+    }
+}
+reflectAlternate();
