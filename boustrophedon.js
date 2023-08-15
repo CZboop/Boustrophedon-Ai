@@ -1,12 +1,7 @@
 // === AN ADOBE ILLUSTRATOR SCRIPT TO APPLY A BOUSTROPHEDON EFFECT TO SELECTED TEXT === //
 
-// getting the active document and selection
-const document = app.activeDocument;
-const currentSelection = document.selection[0];
-const currentLayer = document.activeLayer;
-
 // turning text into shapes and splitting into groups per line
-function turnIntoShapes(textSelection){
+function turnIntoShapes(textSelection, currentLayer, document){
     // creating outlines from each letter and getting ref to the resulting path items (in a group)
     var textOutlines = textSelection.createOutline();
     var textObjects = textOutlines.compoundPathItems;
@@ -41,10 +36,9 @@ function turnIntoShapes(textSelection){
         previousY = currentY;
     }
 }
-turnIntoShapes(currentSelection);
 
 // reflecting each alternate line
-function reflectAlternate(){
+function reflectAlternate(currentLayer){
     // reflecting with scale matrix reversing on x axis
     var totalMatrix = app.getScaleMatrix(-100,100);
     // array to store the layers that have group names created in turnIntoShapes func
@@ -67,4 +61,32 @@ function reflectAlternate(){
         }
     }
 }
-reflectAlternate();
+
+// getting the active document and selection
+function run(){
+    const document = app.activeDocument;
+
+    // error handling - nothing selected
+    if (document.selection.length === 0){
+        alert("No text selected! Please select the text to apply the effect to.", "Error: No Selection", false);
+        return;
+    }
+    const currentSelection = document.selection[0];
+
+    // error handling - selection isn't a text fram
+    if (currentSelection.typename != "TextFrame"){
+        alert("Please select a text frame object!", "Error: Invalid Selection", false);
+        return;
+    }
+    const currentLayer = document.activeLayer;
+
+    // uppercase and align centre
+    currentSelection.textRange.changeCaseTo(CaseChangeType.UPPERCASE);
+    currentSelection.textRange.justification = Justification.CENTER;
+
+    // run the main script
+    turnIntoShapes(currentSelection, currentLayer, document);
+    reflectAlternate(currentLayer);
+}
+
+run();
