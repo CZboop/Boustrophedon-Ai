@@ -35,3 +35,4 @@ To prevent the script from doing one or both of these:
 
 ## Examples
 Check out an example of a before and after from running the script:
+![Two Adobe Illustrator artboards with arrows in between, the left one shows standard text and the right one shows the same text with the boustrophedon style](https://github.com/CZboop/Boustrophedon-Ai/blob/main/images/before_and_after.png?raw=true)
