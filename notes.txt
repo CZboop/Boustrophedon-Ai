@@ -1,6 +1,0 @@
-TODO:
-- make able to handle punctuation as part of same line
-
-DONEs:
-- add error handling e.g. if no text selected, if selected is not text field type
-- auto uppercase and centre align

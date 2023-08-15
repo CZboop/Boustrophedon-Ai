@@ -63,7 +63,7 @@ function reflectAlternate(currentLayer){
 }
 
 // getting the active document and selection
-function run(){
+function run(uppercase, centre){
     const document = app.activeDocument;
 
     // error handling - nothing selected
@@ -81,12 +81,16 @@ function run(){
     const currentLayer = document.activeLayer;
 
     // uppercase and align centre
-    currentSelection.textRange.changeCaseTo(CaseChangeType.UPPERCASE);
-    currentSelection.textRange.justification = Justification.CENTER;
+    if (uppercase === true){
+        currentSelection.textRange.changeCaseTo(CaseChangeType.UPPERCASE);
+    }
+    if (centre === true){
+        currentSelection.textRange.justification = Justification.CENTER;
+    }
 
     // run the main script
     turnIntoShapes(currentSelection, currentLayer, document);
     reflectAlternate(currentLayer);
 }
 
-run();
+run(true, true);
