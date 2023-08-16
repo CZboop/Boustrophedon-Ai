@@ -16,7 +16,7 @@ It will also optionally uppercase and/or centre the text.
 Note: the text may become larger if it doesn't start uppercase, and original forced line breaks may be lost due to this expansion. If this is the case it may be necessary to ensure the starting text frame is larger than the original text
 
 ## How to Use
-Clone this repository or download the boustrephedon.js file so you have the script locally
+Clone this repository or download the boustrophedon.js file so you have the script locally
 
 In Illustrator:
 - Select a single text frame. This should be in a state where the text is still editable, you can still type in the frame
